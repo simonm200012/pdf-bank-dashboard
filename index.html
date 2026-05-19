@@ -1634,7 +1634,8 @@ function fileToBase64(file){
 }
 
 // Robust JSON extraction — handles raw JSON, markdown-fenced, leading prose,
-// or partially truncated responses by snipping the first [ to last ].
+// or arbitrarily-truncated responses by walking the text to find the last
+// complete object and closing the array there.
 function extractJsonArray(text){
   if(!text) throw new Error('Empty response');
   // 1) Try direct parse
@@ -1648,10 +1649,27 @@ function extractJsonArray(text){
   if(first !== -1 && last > first){
     try { const p = JSON.parse(text.substring(first, last + 1)); if(Array.isArray(p)) return p; } catch {}
   }
-  // 4) Try repairing a truncated array by appending ]
+  // 4) Smart truncation repair: walk through text tracking brace depth,
+  // remember the position of each complete top-level object, then close
+  // the array at the last one.
   if(first !== -1){
-    const candidate = text.substring(first).replace(/,\s*$/, '') + ']';
-    try { const p = JSON.parse(candidate); if(Array.isArray(p)) return p; } catch {}
+    let depth = 0, inString = false, escape = false, lastCompleteEnd = -1;
+    for(let i = first + 1; i < text.length; i++){
+      const c = text[i];
+      if(escape){ escape = false; continue; }
+      if(c === '\\'){ escape = true; continue; }
+      if(c === '"'){ inString = !inString; continue; }
+      if(inString) continue;
+      if(c === '{') depth++;
+      else if(c === '}'){
+        depth--;
+        if(depth === 0) lastCompleteEnd = i;
+      }
+    }
+    if(lastCompleteEnd > first){
+      const candidate = text.substring(first, lastCompleteEnd + 1) + ']';
+      try { const p = JSON.parse(candidate); if(Array.isArray(p)) return p; } catch {}
+    }
   }
   throw new Error('Could not parse JSON. First 200 chars: ' + text.slice(0, 200));
 }
@@ -1664,15 +1682,19 @@ CRITICAL OUTPUT RULES:
 - Your ENTIRE response must be a single JSON array.
 - The first character MUST be "[" and the last character MUST be "]".
 - Do NOT wrap in markdown code fences. Do NOT add any text before or after.
+- Use COMPACT single-letter field names to fit more transactions: d, v, s, b, t, c, r.
+- Use minified JSON (no extra whitespace) to save space.
 
-Each transaction must have these exact fields:
-- date: "YYYY-MM-DD"
-- value: positive number (the absolute amount; use the statement's currency, usually EUR)
-- source: short merchant/counterparty name (e.g. "Mercator", "Spar", "Salary - ACME Inc")
-- bank: short code identifying which bank issued the statement (e.g. "NLB", "GORENJSKA BANKA", "Revolut"). Extract from the header/footer.
-- type: one of "Inflow" (money in), "Outflow" (money out / expenses), "Investment" (money moved into investments / brokerage)
-- category: best-guess category (e.g. "Groceries", "Rent", "Salary", "Restaurants", "Transport"), or "Uncategorized"
-- detail: any short helpful description from the line, or ""
+Each transaction is an object with these exact short keys:
+- d: date string "YYYY-MM-DD"
+- v: positive number (the absolute amount; use the statement's currency, usually EUR)
+- s: short merchant/counterparty name (e.g. "Mercator", "Spar", "Salary ACME")
+- b: short bank code (e.g. "NLB", "GORENJSKA BANKA", "Revolut") — extract from PDF header/footer
+- t: one of "In" (money in), "Out" (money out / expenses), "Inv" (money moved into investments / brokerage)
+- c: best-guess category (e.g. "Groceries", "Rent", "Salary", "Restaurants", "Transport"), or "Uncategorized"
+- r: any short helpful description from the line, or ""
+
+Example: [{"d":"2026-03-15","v":42.50,"s":"Mercator","b":"NLB","t":"Out","c":"Groceries","r":""}]
 
 Ignore opening/closing balance rows, page headers, totals, and bank fee summaries that aren't actual transactions.
 If the PDF contains no transactions, return [].`;
@@ -1690,7 +1712,7 @@ If the PDF contains no transactions, return [].`;
       },
       body: JSON.stringify({
         model: ANTHROPIC_PARSE_MODEL,
-        max_tokens: 6000,
+        max_tokens: 8192,
         messages: [{
           role: 'user',
           content: [
@@ -1730,12 +1752,14 @@ async function processPdfFile(file, apiKey, queueItem){
   const fileHash = await sha256(buf);
   // 2) Call Claude (with rate-limit aware retries)
   const raw = await parsePdfWithClaude(file, apiKey, queueItem);
+  // Accept both compact (d,v,s,b,t,c,r) and verbose (date,value,...) keys.
+  const pick = (r, short, long) => r[short] !== undefined ? r[short] : r[long];
   // 3) Determine the dominant month + bank label for the statement
-  const dates = raw.map(r => (r.date || '').slice(0, 7)).filter(Boolean);
+  const dates = raw.map(r => (pick(r,'d','date') || '').slice(0, 7)).filter(Boolean);
   const monthCounts = {};
   for(const m of dates) monthCounts[m] = (monthCounts[m] || 0) + 1;
   const dominantMonth = Object.entries(monthCounts).sort((a,b) => b[1] - a[1])[0]?.[0] || '';
-  const banks = raw.map(r => r.bank).filter(Boolean);
+  const banks = raw.map(r => pick(r,'b','bank')).filter(Boolean);
   const dominantBank = banks.length
     ? Object.entries(banks.reduce((m, b) => (m[b] = (m[b]||0)+1, m), {})).sort((a,b) => b[1] - a[1])[0][0]
     : 'Unknown';
@@ -1746,19 +1770,22 @@ async function processPdfFile(file, apiKey, queueItem){
   // 4) Normalize rows to internal {d, v, s, b, t, c, r, f, statement, _hash}
   const rows = [];
   for(const r of raw){
-    if(!r.date) continue;
-    const value = Math.abs(parseFloat(r.value) || 0);
+    const date = pick(r,'d','date');
+    if(!date) continue;
+    const value = Math.abs(parseFloat(pick(r,'v','value')) || 0);
     if(!value) continue;
-    const typeMap = {Inflow:'In', Outflow:'Out', Investment:'Inv'};
-    const internalType = typeMap[r.type] || 'Out';
+    const typeRaw = pick(r,'t','type') || 'Out';
+    // Accept either short ("In","Out","Inv") or long ("Inflow","Outflow","Investment")
+    const typeMap = {Inflow:'In', Outflow:'Out', Investment:'Inv', In:'In', Out:'Out', Inv:'Inv'};
+    const internalType = typeMap[typeRaw] || 'Out';
     const row = {
-      d: r.date,
+      d: date,
       v: value,
-      s: r.source || '',
-      b: r.bank || dominantBank,
+      s: pick(r,'s','source') || '',
+      b: pick(r,'b','bank') || dominantBank,
       t: internalType,
-      c: r.category || '',
-      r: r.detail || '',
+      c: pick(r,'c','category') || '',
+      r: pick(r,'r','detail') || '',
       f: stmtLabel,
       statement: fileHash,
       _hash: ''
