@@ -1633,9 +1633,37 @@ function fileToBase64(file){
   });
 }
 
-async function parsePdfWithClaude(file, apiKey){
+// Robust JSON extraction — handles raw JSON, markdown-fenced, leading prose,
+// or partially truncated responses by snipping the first [ to last ].
+function extractJsonArray(text){
+  if(!text) throw new Error('Empty response');
+  // 1) Try direct parse
+  try { const p = JSON.parse(text); if(Array.isArray(p)) return p; } catch {}
+  // 2) Strip code fences (allow leading whitespace / language tag)
+  const fenced = text.replace(/^\s*```(?:json|JSON)?\s*\n?/, '').replace(/\n?\s*```\s*$/, '').trim();
+  try { const p = JSON.parse(fenced); if(Array.isArray(p)) return p; } catch {}
+  // 3) Extract from first [ to last ]
+  const first = text.indexOf('[');
+  const last = text.lastIndexOf(']');
+  if(first !== -1 && last > first){
+    try { const p = JSON.parse(text.substring(first, last + 1)); if(Array.isArray(p)) return p; } catch {}
+  }
+  // 4) Try repairing a truncated array by appending ]
+  if(first !== -1){
+    const candidate = text.substring(first).replace(/,\s*$/, '') + ']';
+    try { const p = JSON.parse(candidate); if(Array.isArray(p)) return p; } catch {}
+  }
+  throw new Error('Could not parse JSON. First 200 chars: ' + text.slice(0, 200));
+}
+
+async function parsePdfWithClaude(file, apiKey, queueItem){
   const b64 = await fileToBase64(file);
-  const prompt = `Extract every transaction from this bank statement PDF. Return ONLY a JSON array — no markdown fences, no preamble, no explanation. Just the JSON.
+  const prompt = `Extract every transaction from this bank statement PDF.
+
+CRITICAL OUTPUT RULES:
+- Your ENTIRE response must be a single JSON array.
+- The first character MUST be "[" and the last character MUST be "]".
+- Do NOT wrap in markdown code fences. Do NOT add any text before or after.
 
 Each transaction must have these exact fields:
 - date: "YYYY-MM-DD"
@@ -1649,49 +1677,59 @@ Each transaction must have these exact fields:
 Ignore opening/closing balance rows, page headers, totals, and bank fee summaries that aren't actual transactions.
 If the PDF contains no transactions, return [].`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_PARSE_MODEL,
-      max_tokens: 8000,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
-          { type: 'text', text: prompt }
-        ]
-      }]
-    })
-  });
-  if(!res.ok){
-    const body = await res.text();
-    let msg = 'API error ' + res.status;
-    try { const j = JSON.parse(body); if(j.error && j.error.message) msg = j.error.message; } catch {}
-    throw new Error(msg);
+  // Retry with backoff on rate-limit (429) responses
+  const MAX_ATTEMPTS = 4;
+  for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_PARSE_MODEL,
+        max_tokens: 6000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+    if(res.status === 429 && attempt < MAX_ATTEMPTS){
+      // Output-tokens-per-minute rate limit. Wait at least 65s to reset the window.
+      const retryAfter = parseInt(res.headers.get('retry-after')) || 65;
+      const waitMs = Math.max(retryAfter, 30) * 1000;
+      if(queueItem){
+        queueItem.status = `rate limited \u2014 waiting ${Math.ceil(waitMs/1000)}s (attempt ${attempt+1}/${MAX_ATTEMPTS})`;
+        if(typeof activeTab !== 'undefined' && activeTab === 'statements') renderStatements();
+      }
+      await new Promise(r => setTimeout(r, waitMs));
+      continue;
+    }
+    if(!res.ok){
+      const body = await res.text();
+      let msg = 'API error ' + res.status;
+      try { const j = JSON.parse(body); if(j.error && j.error.message) msg = j.error.message; } catch {}
+      throw new Error(msg);
+    }
+    const data = await res.json();
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    return extractJsonArray(text);
   }
-  const data = await res.json();
-  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
-  // Strip potential code fences just in case
-  const cleaned = text.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
-  let parsed;
-  try { parsed = JSON.parse(cleaned); }
-  catch(e){ throw new Error('Claude returned non-JSON response: ' + text.slice(0, 200)); }
-  if(!Array.isArray(parsed)) throw new Error('Response was not an array');
-  return parsed;
+  throw new Error('Exceeded retry attempts');
 }
 
-async function processPdfFile(file, apiKey){
+async function processPdfFile(file, apiKey, queueItem){
   // 1) Hash file bytes for de-dup of statements
   const buf = await file.arrayBuffer();
   const fileHash = await sha256(buf);
-  // 2) Call Claude
-  const raw = await parsePdfWithClaude(file, apiKey);
+  // 2) Call Claude (with rate-limit aware retries)
+  const raw = await parsePdfWithClaude(file, apiKey, queueItem);
   // 3) Determine the dominant month + bank label for the statement
   const dates = raw.map(r => (r.date || '').slice(0, 7)).filter(Boolean);
   const monthCounts = {};
@@ -1759,7 +1797,7 @@ async function handlePdfDrop(files){
     item.status = 'parsing';
     if(activeTab === 'statements') renderStatements();
     try {
-      const result = await processPdfFile(item.file, apiKey);
+      const result = await processPdfFile(item.file, apiKey, item);
       item.status = 'done';
       item.txnCount = result.parsedCount;
       item.addedCount = result.addedCount;
@@ -1769,6 +1807,11 @@ async function handlePdfDrop(files){
       item.error = e.message || String(e);
     }
     if(activeTab === 'statements') renderStatements();
+    // Small pause between PDFs so we don't blow past the per-minute output token budget.
+    // Adjust if you have a higher rate limit; 4s is conservative for the basic tier.
+    if(i < PARSE_QUEUE.length - 1){
+      await new Promise(r => setTimeout(r, 4000));
+    }
   }
   // Refresh main data after all done
   await loadFromIndexedDB();
