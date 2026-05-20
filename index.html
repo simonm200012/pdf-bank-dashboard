@@ -220,18 +220,18 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1.5px;background:linear-gradie
 <body>
 <div class="filter-overlay" id="filterOverlay" onclick="closeFilters()"></div>
 <div class="filter-panel" id="filterPanel">
-  <div class="fp-header"><span class="fp-title">⚙ Filters</span><button class="fp-close" onclick="closeFilters()">×</button></div>
+  <div class="fp-header"><span class="fp-title">⚙ <span data-i18n="btn.filters">Filters</span></span><button class="fp-close" onclick="closeFilters()">×</button></div>
   <div class="fp-body">
-    <div class="fp-group"><div class="fp-label">Date Range</div><div class="fp-row"><input class="fp-input" type="date" id="fpDateFrom"><input class="fp-input" type="date" id="fpDateTo"></div></div>
-    <div class="fp-group"><div class="fp-label">Type</div><div class="fp-chips" id="fpTypeChips"><span class="fp-chip active" data-val="" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="In" onclick="toggleChip(this)">Inflow</span><span class="fp-chip" data-val="Out" onclick="toggleChip(this)">Outflow</span></div></div>
-    <div class="fp-group"><div class="fp-label">Bank / Account</div><div class="fp-chips" id="fpBankChips"><span class="fp-chip active" data-val="" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="NLB" onclick="toggleChip(this)">NLB</span><span class="fp-chip" data-val="GORENJSKA BANKA" onclick="toggleChip(this)">Gorenjska</span><span class="fp-chip" data-val="Revolut" onclick="toggleChip(this)">Revolut</span><span class="fp-chip" data-val="Trading212" onclick="toggleChip(this)">Trading212</span></div></div>
-    <div class="fp-group"><div class="fp-label">Category</div><select class="fp-select" id="fpCategory"><option value="">All Categories</option></select></div>
-    <div class="fp-group"><div class="fp-label">Amount Range (\u20AC)</div><div class="fp-row"><input class="fp-input" type="number" id="fpAmtMin" placeholder="Min" step="1"><input class="fp-input" type="number" id="fpAmtMax" placeholder="Max" step="1"></div></div>
-    <div class="fp-group"><div class="fp-label">Reconciliation</div><div class="fp-chips" id="fpReconChips"><span class="fp-chip active" data-val="" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="reconciled" onclick="toggleChip(this)">Reconciled</span><span class="fp-chip" data-val="unreconciled" onclick="toggleChip(this)">Unreconciled</span></div></div>
-    <div class="fp-group"><div class="fp-label">Bank Statement</div><select class="fp-select" id="fpStatement"><option value="">All Statements</option></select></div>
-    <div class="fp-group"><div class="fp-label">Search Text</div><input class="fp-input" type="text" id="fpSearch" placeholder="Source, category, detail..."></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.date_range">Date Range</div><div class="fp-row"><input class="fp-input" type="date" id="fpDateFrom"><input class="fp-input" type="date" id="fpDateTo"></div></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.type">Type</div><div class="fp-chips" id="fpTypeChips"><span class="fp-chip active" data-val="" data-i18n="fp.all" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="In" data-i18n="fp.inflow" onclick="toggleChip(this)">Inflow</span><span class="fp-chip" data-val="Out" data-i18n="fp.outflow" onclick="toggleChip(this)">Outflow</span></div></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.bank">Bank / Account</div><div class="fp-chips" id="fpBankChips"><span class="fp-chip active" data-val="" data-i18n="fp.all" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="NLB" onclick="toggleChip(this)">NLB</span><span class="fp-chip" data-val="GORENJSKA BANKA" onclick="toggleChip(this)">Gorenjska</span><span class="fp-chip" data-val="Revolut" onclick="toggleChip(this)">Revolut</span><span class="fp-chip" data-val="Trading212" onclick="toggleChip(this)">Trading212</span></div></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.category">Category</div><select class="fp-select" id="fpCategory"><option value="" data-i18n="fp.all_cats">All Categories</option></select></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.amount">Amount Range (\u20AC)</div><div class="fp-row"><input class="fp-input" type="number" id="fpAmtMin" placeholder="Min" data-i18n-placeholder="fp.min" step="1"><input class="fp-input" type="number" id="fpAmtMax" placeholder="Max" data-i18n-placeholder="fp.max" step="1"></div></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.reconciliation">Reconciliation</div><div class="fp-chips" id="fpReconChips"><span class="fp-chip active" data-val="" data-i18n="fp.all" onclick="toggleChip(this)">All</span><span class="fp-chip" data-val="reconciled" data-i18n="fp.reconciled" onclick="toggleChip(this)">Reconciled</span><span class="fp-chip" data-val="unreconciled" data-i18n="fp.unreconciled" onclick="toggleChip(this)">Unreconciled</span></div></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.statement">Bank Statement</div><select class="fp-select" id="fpStatement"><option value="" data-i18n="fp.all_stmts">All Statements</option></select></div>
+    <div class="fp-group"><div class="fp-label" data-i18n="fp.search">Search Text</div><input class="fp-input" type="text" id="fpSearch" placeholder="Source, category, detail..." data-i18n-placeholder="fp.search_ph"></div>
   </div>
-  <div class="fp-footer"><button class="fp-btn fp-btn-secondary" onclick="resetFilters()">Reset</button><button class="fp-btn fp-btn-primary" onclick="applyFilters()">Apply Filters</button></div>
+  <div class="fp-footer"><button class="fp-btn fp-btn-secondary" data-i18n="fp.reset" onclick="resetFilters()">Reset</button><button class="fp-btn fp-btn-primary" data-i18n="fp.apply" onclick="applyFilters()">Apply Filters</button></div>
 </div>
 <div class="filter-overlay" id="merchantOverlay" onclick="closeMerchant()"></div>
 <div class="filter-panel" id="merchantPanel">
@@ -245,10 +245,11 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1.5px;background:linear-gradie
   <div class="header">
     <div><h1>Revenue & Expenses</h1><p class="subtitle">Loading…</p></div>
     <div class="header-btns">
-      <button class="icon-btn" onclick="exportCSV()">⬇ <span class="lbl">Export CSV</span></button>
-      <button class="icon-btn" onclick="exportMonthPDF()">📄 <span class="lbl">Month PDF</span></button>
-      <button class="icon-btn" onclick="openFilters()">🔍 <span class="lbl">Filters</span></button>
+      <button class="icon-btn" onclick="exportCSV()">⬇ <span class="lbl" data-i18n="btn.export_csv">Export CSV</span></button>
+      <button class="icon-btn" onclick="exportMonthPDF()">📄 <span class="lbl" data-i18n="btn.month_pdf">Month PDF</span></button>
+      <button class="icon-btn" onclick="openFilters()">🔍 <span class="lbl" data-i18n="btn.filters">Filters</span></button>
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()"><span id="themeIcon">\u2600\uFE0F</span><span class="lbl" id="themeText">Light</span></button>
+      <button class="icon-btn" id="langBtn" onclick="setLang(CURRENT_LANG==='en'?'sl':'en')" title="Toggle language"><span>\u{1F310}</span><span class="lbl" id="langText">SL</span></button>
     </div>
   </div>
   <div id="activeFilters" class="active-filters"></div>
@@ -437,6 +438,280 @@ function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;",
 function escapeAttr(s){return escapeHtml(s).replace(/\\/g,'\\\\');}
 
 // ============================================================
+// i18n — English / Slovenian
+// ============================================================
+const T_KEYS = {
+  en: {
+    'app.title': 'Revenue & Expenses',
+    'app.loading': 'Loading…',
+    'app.empty': 'No statements imported yet — go to the {link} to upload your first PDF.',
+    'app.empty_link': 'Statements tab',
+    'app.empty_state_heading': 'No data yet',
+    'app.empty_state_body': 'Import your first bank statement to populate the dashboard.',
+    'app.empty_state_btn': '→ Go to Statements tab',
+    'app.subtitle_txns': 'transactions',
+    'app.subtitle_statement': 'statement',
+    'app.subtitle_statements': 'statements',
+    'app.subtitle_unreconciled': 'unreconciled',
+    // Header buttons
+    'btn.export_csv': 'Export CSV',
+    'btn.month_pdf': 'Month PDF',
+    'btn.filters': 'Filters',
+    'btn.light': 'Light',
+    'btn.dark': 'Dark',
+    // Tabs
+    'tab.overview': 'Overview',
+    'tab.networth': 'Net Worth',
+    'tab.spending': 'Spending',
+    'tab.income': 'Income',
+    'tab.trends': 'Trends',
+    'tab.recurring': 'Recurring',
+    'tab.transactions': 'Transactions',
+    'tab.compare': 'Compare',
+    'tab.projection': 'Projection',
+    'tab.fuel': 'Gas Prices',
+    'tab.statements': 'Statements',
+    'tab.rules': 'Rules',
+    // Year filter
+    'year.all': 'All Years',
+    // KPIs
+    'kpi.income': 'Total Income',
+    'kpi.expenses': 'Total Expenses',
+    'kpi.net': 'Net Balance',
+    'kpi.invested': 'Invested',
+    'kpi.savings_rate': 'Savings Rate',
+    'kpi.income_saved': 'Income saved',
+    'kpi.surplus': 'Surplus',
+    'kpi.deficit': 'Deficit',
+    'kpi.filtered_txns': 'Filtered Txns',
+    'kpi.of_total': 'of {n} total',
+    'kpi.avg_per_mo': 'Avg €{v}/mo (L12M)',
+    // Filter panel
+    'fp.date_range': 'Date Range',
+    'fp.type': 'Type',
+    'fp.bank': 'Bank / Account',
+    'fp.category': 'Category',
+    'fp.amount': 'Amount Range (€)',
+    'fp.search': 'Search Text',
+    'fp.reconciliation': 'Reconciliation',
+    'fp.statement': 'Bank Statement',
+    'fp.all': 'All',
+    'fp.all_cats': 'All Categories',
+    'fp.all_stmts': 'All Statements',
+    'fp.reconciled': 'Reconciled',
+    'fp.unreconciled': 'Unreconciled',
+    'fp.inflow': 'Inflow',
+    'fp.outflow': 'Outflow',
+    'fp.investment': 'Investment',
+    'fp.min': 'Min',
+    'fp.max': 'Max',
+    'fp.search_ph': 'Source, category, detail...',
+    'fp.reset': 'Reset',
+    'fp.apply': 'Apply Filters',
+    // Statements tab
+    'st.kpi_imported': 'Statements imported',
+    'st.kpi_parsed': 'Transactions parsed',
+    'st.kpi_apikey': 'API key',
+    'st.apikey_ok': '✓ Configured',
+    'st.apikey_missing': '⚠ Missing',
+    'st.apikey_local': 'Stored in browser only',
+    'st.apikey_add': 'Open chat to add',
+    'st.import_title': 'Import bank statements',
+    'st.import_blurb': 'Drop PDF bank statements below. Each PDF is sent to Anthropic Claude for parsing into structured transactions. PDFs and your data <strong>never leave your browser</strong> except the one API call to Anthropic. Parsed transactions are stored only in this browser (IndexedDB).',
+    'st.drop_main': 'Drop PDF statements here, or click to choose files',
+    'st.drop_sub': "Multiple files at once supported. Same PDF won't be parsed twice.",
+    'st.queue_title': 'Parsing queue',
+    'st.queue_file': 'File',
+    'st.queue_status': 'Status',
+    'st.queue_details': 'Details',
+    'st.imported_title': 'Imported statements',
+    'st.imported_empty': 'No statements imported yet. Drop a PDF above to start.',
+    'st.col_statement': 'Statement',
+    'st.col_bank': 'Bank',
+    'st.col_txns': 'Txns',
+    'st.col_imported': 'Imported',
+    'st.delete': 'Delete',
+    'st.data_mgmt': 'Data management',
+    'st.export_btn': '⬇ Export backup (JSON)',
+    'st.import_btn': '⬆ Import backup',
+    'st.erase_btn': 'Erase all data',
+    'st.no_api_key_alert': 'Add your Anthropic API key first — open the AI chat (💬 bottom right) and paste it into Settings.',
+    'st.confirm_delete': 'Delete this statement and all its transactions?',
+    'st.confirm_clear': 'Erase ALL imported statements and transactions? This cannot be undone.',
+    'st.no_data_arr': 'No "transactions" array in file.',
+    'st.imported_count': 'Imported {n} new transactions ({d} duplicates skipped).',
+    // Fuel tab
+    'fuel.title': 'Regulated Fuel Prices · Slovenia · €/liter',
+    'fuel.history': 'Weekly history · last 52 weeks',
+    'fuel.loading': 'Loading fuel prices…',
+    'fuel.load_failed': 'Failed to load fuel prices',
+    'fuel.records': 'weekly records',
+    'fuel.scraped': 'Last scrape',
+    'fuel.vs_prev': 'vs prev. week',
+    'fuel.date': 'Date',
+    'fuel.dwk': 'Δ wk',
+    'fuel.petrol': 'Petrol NMB-95',
+    'fuel.diesel': 'Diesel',
+    'fuel.heating_oil': 'Heating oil (ELKO)',
+    'fuel.source': 'Source'
+  },
+  sl: {
+    'app.title': 'Prihodki in stroški',
+    'app.loading': 'Nalagam…',
+    'app.empty': 'Še nimate uvoženih izpiskov — odprite {link}, da uvozite prvi PDF.',
+    'app.empty_link': 'zavihek Izpiski',
+    'app.empty_state_heading': 'Še ni podatkov',
+    'app.empty_state_body': 'Uvozite prvi bančni izpisek, da napolnite nadzorno ploščo.',
+    'app.empty_state_btn': '→ Pojdi na zavihek Izpiski',
+    'app.subtitle_txns': 'transakcij',
+    'app.subtitle_statement': 'izpisek',
+    'app.subtitle_statements': 'izpiskov',
+    'app.subtitle_unreconciled': 'neusklajenih',
+    'btn.export_csv': 'Izvozi CSV',
+    'btn.month_pdf': 'Mesečni PDF',
+    'btn.filters': 'Filtri',
+    'btn.light': 'Svetla',
+    'btn.dark': 'Temna',
+    'tab.overview': 'Pregled',
+    'tab.networth': 'Premoženje',
+    'tab.spending': 'Stroški',
+    'tab.income': 'Prihodki',
+    'tab.trends': 'Trendi',
+    'tab.recurring': 'Ponavljajoči',
+    'tab.transactions': 'Transakcije',
+    'tab.compare': 'Primerjaj',
+    'tab.projection': 'Napoved',
+    'tab.fuel': 'Cene goriv',
+    'tab.statements': 'Izpiski',
+    'tab.rules': 'Pravila',
+    'year.all': 'Vsa leta',
+    'kpi.income': 'Skupni prihodki',
+    'kpi.expenses': 'Skupni stroški',
+    'kpi.net': 'Neto stanje',
+    'kpi.invested': 'Naloženo',
+    'kpi.savings_rate': 'Stopnja varčevanja',
+    'kpi.income_saved': 'Prihranjeni prihodki',
+    'kpi.surplus': 'Presežek',
+    'kpi.deficit': 'Primanjkljaj',
+    'kpi.filtered_txns': 'Filtrirane',
+    'kpi.of_total': 'od {n} skupaj',
+    'kpi.avg_per_mo': 'Povp. €{v}/mes (Z12M)',
+    'fp.date_range': 'Časovno obdobje',
+    'fp.type': 'Vrsta',
+    'fp.bank': 'Banka / Račun',
+    'fp.category': 'Kategorija',
+    'fp.amount': 'Znesek (€)',
+    'fp.search': 'Iskanje',
+    'fp.reconciliation': 'Uskladitev',
+    'fp.statement': 'Bančni izpisek',
+    'fp.all': 'Vse',
+    'fp.all_cats': 'Vse kategorije',
+    'fp.all_stmts': 'Vsi izpiski',
+    'fp.reconciled': 'Usklajeno',
+    'fp.unreconciled': 'Neusklajeno',
+    'fp.inflow': 'Priliv',
+    'fp.outflow': 'Odliv',
+    'fp.investment': 'Naložba',
+    'fp.min': 'Min',
+    'fp.max': 'Maks',
+    'fp.search_ph': 'Vir, kategorija, opis...',
+    'fp.reset': 'Ponastavi',
+    'fp.apply': 'Uporabi filtre',
+    'st.kpi_imported': 'Uvoženi izpiski',
+    'st.kpi_parsed': 'Razčlenjene transakcije',
+    'st.kpi_apikey': 'API ključ',
+    'st.apikey_ok': '✓ Nastavljen',
+    'st.apikey_missing': '⚠ Manjka',
+    'st.apikey_local': 'Shranjen samo v brskalniku',
+    'st.apikey_add': 'Odprite klepet za dodajanje',
+    'st.import_title': 'Uvozi bančne izpiske',
+    'st.import_blurb': 'Spustite PDF bančne izpiske spodaj. Vsak PDF je poslan Anthropic Claude za razčlenjevanje v strukturirane transakcije. PDF-ji in vaši podatki <strong>nikoli ne zapustijo vašega brskalnika</strong> razen za en API klic na Anthropic. Razčlenjene transakcije so shranjene samo v tem brskalniku (IndexedDB).',
+    'st.drop_main': 'Spustite PDF izpiske tukaj ali kliknite za izbiro datotek',
+    'st.drop_sub': 'Podpora za več datotek hkrati. Isti PDF ne bo razčlenjen dvakrat.',
+    'st.queue_title': 'Čakalna vrsta',
+    'st.queue_file': 'Datoteka',
+    'st.queue_status': 'Status',
+    'st.queue_details': 'Podrobnosti',
+    'st.imported_title': 'Uvoženi izpiski',
+    'st.imported_empty': 'Še ni uvoženih izpiskov. Spustite PDF zgoraj, da začnete.',
+    'st.col_statement': 'Izpisek',
+    'st.col_bank': 'Banka',
+    'st.col_txns': 'Trans.',
+    'st.col_imported': 'Uvožen',
+    'st.delete': 'Izbriši',
+    'st.data_mgmt': 'Upravljanje podatkov',
+    'st.export_btn': '⬇ Izvozi varnostno kopijo (JSON)',
+    'st.import_btn': '⬆ Uvozi varnostno kopijo',
+    'st.erase_btn': 'Izbriši vse podatke',
+    'st.no_api_key_alert': 'Najprej dodajte svoj Anthropic API ključ — odprite AI klepet (💬 spodaj desno) in ga prilepite v nastavitve.',
+    'st.confirm_delete': 'Izbrišem ta izpisek in vse njegove transakcije?',
+    'st.confirm_clear': 'Izbrišem VSE uvožene izpiske in transakcije? Tega ni mogoče razveljaviti.',
+    'st.no_data_arr': 'V datoteki ni polja "transactions".',
+    'st.imported_count': 'Uvoženih {n} novih transakcij ({d} dvojnikov preskočenih).',
+    'fuel.title': 'Regulirane cene goriv · Slovenija · €/liter',
+    'fuel.history': 'Tedenska zgodovina · zadnjih 52 tednov',
+    'fuel.loading': 'Nalagam cene goriv…',
+    'fuel.load_failed': 'Cen goriv ni bilo mogoče naložiti',
+    'fuel.records': 'tedenskih zapisov',
+    'fuel.scraped': 'Zadnja posodobitev',
+    'fuel.vs_prev': 'proti prejšnjemu tednu',
+    'fuel.date': 'Datum',
+    'fuel.dwk': 'Δ teden',
+    'fuel.petrol': 'Bencin NMB-95',
+    'fuel.diesel': 'Dizel',
+    'fuel.heating_oil': 'Kurilno olje (ELKO)',
+    'fuel.source': 'Vir'
+  }
+};
+let CURRENT_LANG = localStorage.getItem('dash-lang') || 'en';
+if(!T_KEYS[CURRENT_LANG]) CURRENT_LANG = 'en';
+function t(key, vars){
+  let s = (T_KEYS[CURRENT_LANG] && T_KEYS[CURRENT_LANG][key]) || T_KEYS.en[key] || key;
+  if(vars){ for(const k in vars) s = s.replace('{'+k+'}', vars[k]); }
+  return s;
+}
+function setLang(lang){
+  if(!T_KEYS[lang]) return;
+  CURRENT_LANG = lang;
+  localStorage.setItem('dash-lang', lang);
+  // Re-translate everything: rebuild tabs, header button text, year filter labels, etc.
+  rebuildHeaderAndTabs();
+  if(typeof loadFromIndexedDB === 'function') loadFromIndexedDB().then(()=>render());
+}
+function rebuildHeaderAndTabs(){
+  // Sweep every static element marked with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if(key) el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if(key) el.placeholder = t(key);
+  });
+  // Theme button retains current state
+  const themeTxt = document.getElementById('themeText');
+  if(themeTxt) themeTxt.textContent = document.documentElement.dataset.theme === 'light' ? t('btn.dark') : t('btn.light');
+  // Language toggle text — show the OTHER language as the action
+  const langTxt = document.getElementById('langText');
+  if(langTxt) langTxt.textContent = CURRENT_LANG === 'en' ? 'SL' : 'EN';
+  // Tabs
+  const tabsBar = document.getElementById('tabsBar');
+  if(tabsBar){
+    tabsBar.innerHTML = TABS.map(tab => `<button class="tab-btn${tab===activeTab?' active':''}" data-tab="${tab}">${t('tab.'+tab)}</button>`).join('');
+    tabsBar.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+      tabsBar.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); activeTab = b.dataset.tab; txnPage = 0; render(); serializeStateToHash();
+    }));
+  }
+  // Year filter "All" option (others are numeric years — no translation needed)
+  const yearSel = document.getElementById('yearFilter');
+  if(yearSel){
+    const first = yearSel.options[0];
+    if(first && first.value === 'All') first.text = t('year.all');
+  }
+}
+
+// ============================================================
 // AUTO-CATEGORIZATION RULES (localStorage-backed)
 // ============================================================
 const RULES_KEY='fin-cat-rules';
@@ -484,7 +759,8 @@ async function loadFromIndexedDB() {
 function rebuildDynamicFilterUI() {
   const subEl = document.querySelector('.subtitle');
   if(TXNS.length === 0){
-    subEl.innerHTML = 'No statements imported yet \u2014 go to the <a href="#" onclick="event.preventDefault();activeTab=\'statements\';render();serializeStateToHash();return false;" style="color:#10b981">Statements tab</a> to upload your first PDF.';
+    const link = `<a href="#" onclick="event.preventDefault();activeTab='statements';render();serializeStateToHash();return false;" style="color:#10b981">${t('app.empty_link')}</a>`;
+    subEl.innerHTML = t('app.empty', {link});
     dashboardSubtitle = subEl.innerHTML;
     const yearSel = document.getElementById('yearFilter');
     if(yearSel) yearSel.innerHTML = '<option value="All">All Years</option>';
@@ -500,9 +776,10 @@ function rebuildDynamicFilterUI() {
   const minMonth = minDate ? new Date(minDate).toLocaleString('en', { month: 'short', year: 'numeric' }) : '';
   const maxMonth = maxDate ? new Date(maxDate).toLocaleString('en', { month: 'short', year: 'numeric' }) : '';
   const unreconCount = TXNS.filter(t=>!t.f).length;
-  const baseSub = minMonth + ' \u2014 ' + maxMonth + ' \u00B7 ' + TXNS.length.toLocaleString() + ' transactions \u00B7 ' + STATEMENTS.length + ' statement' + (STATEMENTS.length===1?'':'s');
+  const stmtWord = STATEMENTS.length===1 ? t('app.subtitle_statement') : t('app.subtitle_statements');
+  const baseSub = minMonth + ' \u2014 ' + maxMonth + ' \u00B7 ' + TXNS.length.toLocaleString() + ' ' + t('app.subtitle_txns') + ' \u00B7 ' + STATEMENTS.length + ' ' + stmtWord;
   subEl.innerHTML = baseSub + (unreconCount>0
-    ? ' \u00B7 <a href="#" onclick="event.preventDefault();setChipState(\'fpReconChips\',\'unreconciled\');gFilters.recon=\'unreconciled\';render();serializeStateToHash();" style="color:#f59e0b;text-decoration:none;font-weight:600">\u26A0 '+unreconCount.toLocaleString()+' unreconciled</a>'
+    ? ' \u00B7 <a href="#" onclick="event.preventDefault();setChipState(\'fpReconChips\',\'unreconciled\');gFilters.recon=\'unreconciled\';render();serializeStateToHash();" style="color:#f59e0b;text-decoration:none;font-weight:600">\u26A0 '+unreconCount.toLocaleString()+' '+t('app.subtitle_unreconciled')+'</a>'
     : '');
   dashboardSubtitle = subEl.innerHTML;
 
@@ -570,8 +847,9 @@ const fmt=v=>v>=1000?(v/1000).toFixed(1)+"k":Math.round(v).toLocaleString();
 const fmtE=v=>"\u20AC"+Math.round(v).toLocaleString();
 
 let activeTab="overview",yearFilter="All",charts={},txnPage=0;
-const TABS=["overview","networth","spending","income","trends","recurring","transactions","compare","projection","statements","rules"];
-const TAB_LABELS={overview:"Overview",networth:"Net Worth",spending:"Spending",income:"Income",trends:"Trends",recurring:"Recurring",transactions:"Transactions",compare:"Compare",projection:"Projection",statements:"Statements",rules:"Rules"};
+const TABS=["overview","networth","spending","income","trends","recurring","transactions","compare","projection","fuel","statements","rules"];
+// TAB_LABELS kept for any legacy reference; the tabs bar is rendered via t('tab.'+key) and rebuilt by rebuildHeaderAndTabs() on language change.
+const TAB_LABELS=new Proxy({}, {get:(_,k)=>t('tab.'+k)});
 let gFilters={type:"",bank:"",category:"",dateFrom:"",dateTo:"",amtMin:"",amtMax:"",search:"",recon:"",statement:""};
 
 let dashboardSubtitle='Loading…';
@@ -697,19 +975,19 @@ function yoyBadge(c,p,invertColor){
   const sign=pct>=0?'+':'';
   return `<span class="delta ${cls}" style="margin-left:6px">${sign}${pct.toFixed(1)}%</span>`;
 }
-function renderKPIs(){const t=getTotals(),m=gfm(),l=m.slice(-12),ai=l.reduce((s,d)=>s+d.Inflow,0)/Math.max(l.length,1),ao=l.reduce((s,d)=>s+d.Outflow,0)/Math.max(l.length,1),aInv=l.reduce((s,d)=>s+(d.Invested||0),0)/Math.max(l.length,1);
+function renderKPIs(){const tot=getTotals(),m=gfm(),l=m.slice(-12),ai=l.reduce((s,d)=>s+d.Inflow,0)/Math.max(l.length,1),ao=l.reduce((s,d)=>s+d.Outflow,0)/Math.max(l.length,1),aInv=l.reduce((s,d)=>s+(d.Invested||0),0)/Math.max(l.length,1);
 const ftxns=getFilteredTxns();
 const yoy=getYoYTotals();
 const inBadge=yoy?yoyBadge(yoy.cur.inflow,yoy.prev.inflow,false):'';
 const outBadge=yoy?yoyBadge(yoy.cur.outflow,yoy.prev.outflow,true):'';
 const netBadge=yoy?yoyBadge(yoy.cur.net,yoy.prev.net,false):'';
 const yoyLabel=yoy?`<span style="font-size:10px;color:var(--text5);margin-left:4px">${yoy.label}</span>`:'';
-const invCard=(t.invested>0)?`<div class="kpi"><div class="kpi-label">Invested</div><div class="kpi-value" style="color:#8b5cf6">\u20AC${fmt(t.invested)}</div><div class="kpi-sub">Avg \u20AC${fmt(aInv)}/mo (L12M)</div></div>`:'';
+const invCard=(tot.invested>0)?`<div class="kpi"><div class="kpi-label">${t('kpi.invested')}</div><div class="kpi-value" style="color:#8b5cf6">\u20AC${fmt(tot.invested)}</div><div class="kpi-sub">${t('kpi.avg_per_mo',{v:fmt(aInv)})}</div></div>`:'';
 document.getElementById("kpis").innerHTML=`
-<div class="kpi"><div class="kpi-label">Total Income</div><div class="kpi-value" style="color:#10b981">\u20AC${fmt(t.inflow)}</div><div class="kpi-sub">Avg \u20AC${fmt(ai)}/mo (L12M)${inBadge?'<br>'+inBadge+yoyLabel:''}</div></div>
-<div class="kpi"><div class="kpi-label">Total Expenses</div><div class="kpi-value" style="color:#ef4444">\u20AC${fmt(t.outflow)}</div><div class="kpi-sub">Avg \u20AC${fmt(ao)}/mo (L12M)${outBadge?'<br>'+outBadge+yoyLabel:''}</div></div>
-<div class="kpi"><div class="kpi-label">Net Balance</div><div class="kpi-value" style="color:${t.net>=0?'#10b981':'#ef4444'}">\u20AC${fmt(Math.abs(t.net))}</div><div class="kpi-sub">${t.net>=0?'Surplus':'Deficit'}${netBadge?'<br>'+netBadge+yoyLabel:''}</div></div>
-${invCard}<div class="kpi"><div class="kpi-label">${hasActiveFilters()?'Filtered Txns':'Savings Rate'}</div><div class="kpi-value" style="color:${hasActiveFilters()?'#8b5cf6':t.rate>=0?'#06b6d4':'#ef4444'}">${hasActiveFilters()?ftxns.length:t.rate.toFixed(1)+'%'}</div><div class="kpi-sub">${hasActiveFilters()?'of '+TXNS.length+' total':'Income saved'}</div></div>`}
+<div class="kpi"><div class="kpi-label">${t('kpi.income')}</div><div class="kpi-value" style="color:#10b981">\u20AC${fmt(tot.inflow)}</div><div class="kpi-sub">${t('kpi.avg_per_mo',{v:fmt(ai)})}${inBadge?'<br>'+inBadge+yoyLabel:''}</div></div>
+<div class="kpi"><div class="kpi-label">${t('kpi.expenses')}</div><div class="kpi-value" style="color:#ef4444">\u20AC${fmt(tot.outflow)}</div><div class="kpi-sub">${t('kpi.avg_per_mo',{v:fmt(ao)})}${outBadge?'<br>'+outBadge+yoyLabel:''}</div></div>
+<div class="kpi"><div class="kpi-label">${t('kpi.net')}</div><div class="kpi-value" style="color:${tot.net>=0?'#10b981':'#ef4444'}">\u20AC${fmt(Math.abs(tot.net))}</div><div class="kpi-sub">${tot.net>=0?t('kpi.surplus'):t('kpi.deficit')}${netBadge?'<br>'+netBadge+yoyLabel:''}</div></div>
+${invCard}<div class="kpi"><div class="kpi-label">${hasActiveFilters()?t('kpi.filtered_txns'):t('kpi.savings_rate')}</div><div class="kpi-value" style="color:${hasActiveFilters()?'#8b5cf6':tot.rate>=0?'#06b6d4':'#ef4444'}">${hasActiveFilters()?ftxns.length:tot.rate.toFixed(1)+'%'}</div><div class="kpi-sub">${hasActiveFilters()?t('kpi.of_total',{n:TXNS.length}):t('kpi.income_saved')}</div></div>`}
 
 // Dynamic insights
 function renderInsights(){
@@ -1814,7 +2092,7 @@ async function processPdfFile(file, apiKey, queueItem){
 async function handlePdfDrop(files){
   const apiKey = (CHAT && CHAT.apiKey) || localStorage.getItem('chat-anthropic-key') || '';
   if(!apiKey){
-    alert('Add your Anthropic API key first — open the AI chat (\u{1F4AC} bottom right) and paste it into Settings.');
+    alert(t('st.no_api_key_alert'));
     return;
   }
   PARSE_QUEUE = Array.from(files).map(f => ({file:f, status:'queued', txnCount:0, error:''}));
@@ -1847,14 +2125,14 @@ async function handlePdfDrop(files){
 }
 
 async function deleteStatement(stmtId){
-  if(!confirm('Delete this statement and all its transactions?')) return;
+  if(!confirm(t('st.confirm_delete'))) return;
   await dbDeleteByStatement(stmtId);
   await loadFromIndexedDB();
   renderStatements();
 }
 
 async function clearAllData(){
-  if(!confirm('Erase ALL imported statements and transactions? This cannot be undone.')) return;
+  if(!confirm(t('st.confirm_clear'))) return;
   await dbClearAll();
   PARSE_QUEUE = [];
   await loadFromIndexedDB();
@@ -1881,10 +2159,10 @@ function importJSON(){
     const txt = await f.text();
     let data;
     try { data = JSON.parse(txt); } catch(e){ alert('Invalid JSON: '+e.message); return; }
-    if(!data.transactions || !Array.isArray(data.transactions)){ alert('No "transactions" array in file.'); return; }
+    if(!data.transactions || !Array.isArray(data.transactions)){ alert(t('st.no_data_arr')); return; }
     if(data.statements){ for(const s of data.statements) await dbPutStatement(s); }
     const added = await dbAddTxns(data.transactions);
-    alert(`Imported ${added} new transactions (${data.transactions.length - added} duplicates skipped).`);
+    alert(t('st.imported_count', {n: added, d: data.transactions.length - added}));
     await loadFromIndexedDB();
     renderStatements();
   };
@@ -1900,9 +2178,9 @@ function renderStatements(){
   const hasApiKey = !!((CHAT && CHAT.apiKey) || localStorage.getItem('chat-anthropic-key'));
 
   k.innerHTML = `
-    <div class="kpi"><div class="kpi-label">Statements imported</div><div class="kpi-value" style="color:#8b5cf6">${totalStmts}</div><div class="kpi-sub">${oldestParse?'Since '+oldestParse.slice(0,10):'\u2014'}</div></div>
-    <div class="kpi"><div class="kpi-label">Transactions parsed</div><div class="kpi-value" style="color:#10b981">${totalTxns.toLocaleString()}</div><div class="kpi-sub">Stored locally (IndexedDB)</div></div>
-    <div class="kpi"><div class="kpi-label">API key</div><div class="kpi-value" style="color:${hasApiKey?'#10b981':'#ef4444'};font-size:20px">${hasApiKey?'\u2713 Configured':'\u26A0 Missing'}</div><div class="kpi-sub">${hasApiKey?'Stored in browser only':'Open chat to add'}</div></div>
+    <div class="kpi"><div class="kpi-label">${t('st.kpi_imported')}</div><div class="kpi-value" style="color:#8b5cf6">${totalStmts}</div><div class="kpi-sub">${oldestParse?'\u2014 '+oldestParse.slice(0,10):'\u2014'}</div></div>
+    <div class="kpi"><div class="kpi-label">${t('st.kpi_parsed')}</div><div class="kpi-value" style="color:#10b981">${totalTxns.toLocaleString()}</div><div class="kpi-sub">IndexedDB</div></div>
+    <div class="kpi"><div class="kpi-label">${t('st.kpi_apikey')}</div><div class="kpi-value" style="color:${hasApiKey?'#10b981':'#ef4444'};font-size:20px">${hasApiKey?t('st.apikey_ok'):t('st.apikey_missing')}</div><div class="kpi-sub">${hasApiKey?t('st.apikey_local'):t('st.apikey_add')}</div></div>
   `;
 
   const queueRows = PARSE_QUEUE.map((q,i) => {
@@ -1920,31 +2198,31 @@ function renderStatements(){
     <td>${escapeHtml(s.bank)}</td>
     <td style="font-family:'JetBrains Mono',monospace">${s.transactionCount}</td>
     <td style="font-size:11px;color:var(--text4)">${s.parsedAt.slice(0,10)}</td>
-    <td><button class="fp-btn fp-btn-secondary" style="font-size:11px;padding:5px 10px" data-id="${escapeAttr(s.id)}" onclick="deleteStatement(this.dataset.id)">Delete</button></td>
+    <td><button class="fp-btn fp-btn-secondary" style="font-size:11px;padding:5px 10px" data-id="${escapeAttr(s.id)}" onclick="deleteStatement(this.dataset.id)">${t('st.delete')}</button></td>
   </tr>`).join('');
 
   c.innerHTML = `
     <div class="section" style="margin-bottom:16px">
-      <div class="section-title">Import bank statements</div>
-      <p style="color:var(--text3);margin-bottom:14px;line-height:1.6">Drop PDF bank statements below. Each PDF is sent to Anthropic Claude for parsing into structured transactions. PDFs and your data <strong>never leave your browser</strong> except the one API call to Anthropic. Parsed transactions are stored only in this browser (IndexedDB).</p>
+      <div class="section-title">${t('st.import_title')}</div>
+      <p style="color:var(--text3);margin-bottom:14px;line-height:1.6">${t('st.import_blurb')}</p>
       <div id="pdfDrop" style="border:2px dashed var(--border2);border-radius:14px;padding:40px 20px;text-align:center;color:var(--text3);cursor:pointer;transition:all .2s;background:var(--bg2)">
         <div style="font-size:36px;margin-bottom:8px">\u2B07</div>
-        <div style="font-size:14px">Drop PDF statements here, or click to choose files</div>
-        <div style="font-size:11px;color:var(--text5);margin-top:6px">Multiple files at once supported. Same PDF won't be parsed twice.</div>
+        <div style="font-size:14px">${t('st.drop_main')}</div>
+        <div style="font-size:11px;color:var(--text5);margin-top:6px">${t('st.drop_sub')}</div>
       </div>
       <input type="file" id="pdfInput" accept="application/pdf" multiple style="display:none">
-      ${queueRows ? `<div style="margin-top:16px"><div style="font-size:12px;color:var(--text4);margin-bottom:6px;font-weight:600">Parsing queue</div><table class="txn-table"><thead><tr><th>File</th><th>Status</th><th>Details</th></tr></thead><tbody>${queueRows}</tbody></table></div>` : ''}
+      ${queueRows ? `<div style="margin-top:16px"><div style="font-size:12px;color:var(--text4);margin-bottom:6px;font-weight:600">${t('st.queue_title')}</div><table class="txn-table"><thead><tr><th>${t('st.queue_file')}</th><th>${t('st.queue_status')}</th><th>${t('st.queue_details')}</th></tr></thead><tbody>${queueRows}</tbody></table></div>` : ''}
     </div>
     <div class="section" style="margin-bottom:16px">
-      <div class="section-title">Imported statements (${STATEMENTS.length})</div>
-      ${stmtRows ? `<div class="table-wrap" style="max-height:500px"><table class="txn-table"><thead><tr><th>Statement</th><th>Bank</th><th>Txns</th><th>Imported</th><th></th></tr></thead><tbody>${stmtRows}</tbody></table></div>` : '<p style="color:var(--text4);padding:20px;text-align:center">No statements imported yet. Drop a PDF above to start.</p>'}
+      <div class="section-title">${t('st.imported_title')} (${STATEMENTS.length})</div>
+      ${stmtRows ? `<div class="table-wrap" style="max-height:500px"><table class="txn-table"><thead><tr><th>${t('st.col_statement')}</th><th>${t('st.col_bank')}</th><th>${t('st.col_txns')}</th><th>${t('st.col_imported')}</th><th></th></tr></thead><tbody>${stmtRows}</tbody></table></div>` : `<p style="color:var(--text4);padding:20px;text-align:center">${t('st.imported_empty')}</p>`}
     </div>
     <div class="section">
-      <div class="section-title">Data management</div>
+      <div class="section-title">${t('st.data_mgmt')}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="fp-btn fp-btn-secondary" style="max-width:200px" onclick="exportAllJSON()">\u2B07 Export backup (JSON)</button>
-        <button class="fp-btn fp-btn-secondary" style="max-width:200px" onclick="importJSON()">\u2B06 Import backup</button>
-        <button class="fp-btn fp-btn-secondary" style="max-width:200px;color:#ef4444;border-color:rgba(239,68,68,0.3)" onclick="clearAllData()">Erase all data</button>
+        <button class="fp-btn fp-btn-secondary" style="max-width:240px" onclick="exportAllJSON()">${t('st.export_btn')}</button>
+        <button class="fp-btn fp-btn-secondary" style="max-width:240px" onclick="importJSON()">${t('st.import_btn')}</button>
+        <button class="fp-btn fp-btn-secondary" style="max-width:240px;color:#ef4444;border-color:rgba(239,68,68,0.3)" onclick="clearAllData()">${t('st.erase_btn')}</button>
       </div>
     </div>`;
 
@@ -1961,13 +2239,106 @@ function renderStatements(){
   });
 }
 
+// ============================================================
+// FUEL PRICES — fetches the JSON published by the sister repo
+// (revenue-expenses-dashboard runs the weekly scraper)
+// ============================================================
+const FUEL_URL = 'https://simonm200012.github.io/revenue-expenses-dashboard/data/fuel-prices.json';
+let FUEL_DATA=null, FUEL_LOADING=false;
+async function loadFuelData(){
+  if(FUEL_DATA||FUEL_LOADING)return FUEL_DATA;
+  FUEL_LOADING=true;
+  try{
+    const res=await fetch(FUEL_URL,{cache:'default'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    FUEL_DATA=await res.json();
+  }catch(e){
+    FUEL_DATA={error:e.message||String(e)};
+  }finally{
+    FUEL_LOADING=false;
+  }
+  return FUEL_DATA;
+}
+function fuelPct(curr,prev){if(prev==null||curr==null||prev===0)return null; return ((curr-prev)/prev)*100;}
+function fuelPctBadge(pct){
+  if(pct==null)return '<span class="kpi-sub">—</span>';
+  const cls=pct>=0?'pos':'neg';
+  const sign=pct>=0?'+':'';
+  return `<span class="delta ${cls}">${sign}${pct.toFixed(2)}%</span>`;
+}
+function renderFuel(){
+  const k=document.getElementById('kpis');
+  const c=document.getElementById('content');
+  if(!FUEL_DATA){
+    k.innerHTML='';
+    c.innerHTML='<div style="text-align:center;padding:60px;color:var(--text4)"><p style="font-size:16px">'+t('fuel.loading')+'</p></div>';
+    loadFuelData().then(()=>{if(activeTab==='fuel')renderFuel()});
+    return;
+  }
+  if(FUEL_DATA.error){
+    k.innerHTML='';
+    c.innerHTML=`<div style="text-align:center;padding:60px;color:#ef4444"><p>${t('fuel.load_failed')}: ${escapeHtml(FUEL_DATA.error)}</p></div>`;
+    return;
+  }
+  const prices=FUEL_DATA.prices||[];
+  if(!prices.length){k.innerHTML='';c.innerHTML='<div style="padding:40px;text-align:center;color:var(--text4)">—</div>';return}
+  const latest=prices[0];
+  const prev=prices[1]||{};
+  const labelKeys={nmb95:'fuel.petrol', diesel:'fuel.diesel', elko:'fuel.heating_oil'};
+  const fuels=(FUEL_DATA.fuels||[{key:'nmb95'},{key:'diesel'},{key:'elko'}]).map(f=>({key:f.key, label:t(labelKeys[f.key]||'fuel.petrol')}));
+  const colors={nmb95:'#10b981',diesel:'#3b82f6',elko:'#f59e0b'};
+  k.innerHTML=fuels.map(f=>{
+    const v=latest[f.key]; const pv=prev[f.key]; const pct=fuelPct(v,pv);
+    return `<div class="kpi"><div class="kpi-label">${escapeHtml(f.label)}</div><div class="kpi-value" style="color:${colors[f.key]||'#10b981'}">€${v!=null?v.toFixed(3):'—'}</div><div class="kpi-sub" style="display:flex;align-items:center;gap:6px">${fuelPctBadge(pct)}<span>${t('fuel.vs_prev')}</span></div></div>`;
+  }).join('');
+  const chrono=[...prices].reverse();
+  const labels=chrono.map(p=>p.date);
+  const datasets=fuels.map(f=>({label:f.label, data:chrono.map(p=>p[f.key]), borderColor:colors[f.key]||'#10b981', backgroundColor:(colors[f.key]||'#10b981')+'22', borderWidth:2, pointRadius:0, tension:.25, spanGaps:true}));
+  const histRows=prices.slice(0,52).map((p,i)=>{
+    const prv=prices[i+1];
+    const cells=fuels.map(f=>{
+      const v=p[f.key]; const pv=prv?prv[f.key]:null; const pct=fuelPct(v,pv);
+      const cls=pct==null?'':(pct>=0?'in':'out');
+      const sign=pct==null?'':(pct>=0?'+':'');
+      return `<td style="font-family:'JetBrains Mono',monospace">${v!=null?'€'+v.toFixed(3):'—'}</td><td class="${cls}" style="font-family:'JetBrains Mono',monospace;font-size:11px">${pct==null?'—':sign+pct.toFixed(2)+'%'}</td>`;
+    }).join('');
+    return `<tr><td>${p.date}</td>${cells}</tr>`;
+  }).join('');
+  const fuelHeaders=fuels.map(f=>`<th>${escapeHtml(f.label)}</th><th>${t('fuel.dwk')}</th>`).join('');
+  const updated=FUEL_DATA.updated?new Date(FUEL_DATA.updated).toLocaleString():'';
+  c.innerHTML=`
+  <div class="grid grid-1">
+    <div class="section">
+      <div class="section-title">${t('fuel.title')}</div>
+      <div style="font-size:11px;color:var(--text5);margin-bottom:12px">
+        ${t('fuel.source')}: <a href="${escapeHtml(FUEL_DATA.source||'#')}" target="_blank" rel="noopener" style="color:#10b981">energetika-portal.si</a>
+        · ${prices.length} ${t('fuel.records')} · ${t('fuel.scraped')}: ${escapeHtml(updated)}
+      </div>
+      <div style="position:relative;height:380px"><canvas id="fuelChart"></canvas></div>
+    </div>
+    <div class="section">
+      <div class="section-title">${t('fuel.history')}</div>
+      <div class="table-wrap" style="max-height:520px">
+        <table class="txn-table"><thead><tr><th>${t('fuel.date')}</th>${fuelHeaders}</tr></thead><tbody>${histRows}</tbody></table>
+      </div>
+    </div>
+  </div>`;
+  charts.fuelChart=new Chart(document.getElementById('fuelChart'),{
+    type:'line', data:{labels,datasets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',axis:'x',intersect:false},
+      scales:{x:{ticks:{maxTicksLimit:12,maxRotation:0,autoSkip:true,color:'#94a3b8'},grid:{display:false}},y:{ticks:{callback:v=>'€'+v.toFixed(2),color:'#94a3b8'},grid:{color:'rgba(255,255,255,0.04)'}}},
+      plugins:{legend:{position:'top',labels:{boxWidth:12,padding:10,font:{size:12}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': €'+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'—')}}}}
+  });
+}
+
 function render(){
   dc();
   const isRules=activeTab==='rules';
   const isStatements=activeTab==='statements';
+  const isFuel=activeTab==='fuel';
   const isNetWorth=activeTab==='networth';
-  document.getElementById('activeFilters').style.display=(isRules||isStatements||isNetWorth)?'none':'flex';
-  document.getElementById('yearFilter').style.display=(isRules||isStatements||isNetWorth)?'none':'inline-block';
+  document.getElementById('activeFilters').style.display=(isRules||isStatements||isFuel||isNetWorth)?'none':'flex';
+  document.getElementById('yearFilter').style.display=(isRules||isStatements||isFuel||isNetWorth)?'none':'inline-block';
   document.querySelector('.subtitle').innerHTML=dashboardSubtitle;
   if(isRules){
     document.getElementById('kpis').innerHTML='';
@@ -1980,6 +2351,11 @@ function render(){
     renderStatements();
     return;
   }
+  if(isFuel){
+    document.getElementById('insightsSection').innerHTML='';
+    renderFuel();
+    return;
+  }
   if(isNetWorth){
     document.getElementById('insightsSection').innerHTML='';
     renderNetWorth();
@@ -1988,7 +2364,7 @@ function render(){
   if(TXNS.length===0){
     document.getElementById('kpis').innerHTML='';
     document.getElementById('insightsSection').innerHTML='';
-    document.getElementById('content').innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--text4)"><div style="font-size:48px;margin-bottom:12px">\u{1F4C4}</div><h2 style="color:var(--text);margin-bottom:8px">No data yet</h2><p style="margin-bottom:18px">Import your first bank statement to populate the dashboard.</p><button class="fp-btn fp-btn-primary" style="max-width:240px;margin:0 auto" onclick="activeTab=\'statements\';render();serializeStateToHash()">\u2192 Go to Statements tab</button></div>';
+    document.getElementById('content').innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--text4)"><div style="font-size:48px;margin-bottom:12px">\u{1F4C4}</div><h2 style="color:var(--text);margin-bottom:8px">${t('app.empty_state_heading')}</h2><p style="margin-bottom:18px">${t('app.empty_state_body')}</p><button class="fp-btn fp-btn-primary" style="max-width:240px;margin:0 auto" onclick="activeTab='statements';render();serializeStateToHash()">${t('app.empty_state_btn')}</button></div>`;
     return;
   }
   renderActiveTags();
@@ -1998,6 +2374,7 @@ function render(){
 }
 
 applyTheme();
+rebuildHeaderAndTabs();
 (async()=>{await loadFromIndexedDB();restoreStateFromHash();render();})();
 
 // PWA service worker registration
