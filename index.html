@@ -2743,32 +2743,33 @@ function pickProvider(){
   return null;
 }
 
-async function callAIText({system, prompt, maxTokens=600}){
-  const provider=pickProvider();
-  if(!provider) throw new Error('No AI key configured. Add Anthropic or Gemini key in chat settings (\u2699\uFE0F).');
-  if(provider==='gemini'){
-    const model='gemini-2.0-flash';
-    const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(CHAT.geminiKey)}`;
-    const fullPrompt=(system?system+'\n\n':'')+prompt;
-    const res=await fetch(url,{
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user', parts:[{text:fullPrompt}]}],
-        generationConfig:{maxOutputTokens:maxTokens, temperature:0.4}
-      })
-    });
-    if(!res.ok){
-      const body=await res.text();
-      let m='Gemini error '+res.status;
-      try{const j=JSON.parse(body);if(j.error&&j.error.message)m='Gemini: '+j.error.message;}catch{}
-      throw new Error(m);
-    }
-    const data=await res.json();
-    const text=(data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
-    return {text, provider:'gemini'};
+// Call Gemini with a specific model. Throws on failure.
+async function _callGemini(model, system, prompt, maxTokens){
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(CHAT.geminiKey)}`;
+  const fullPrompt=(system?system+'\n\n':'')+prompt;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({
+      contents:[{role:'user', parts:[{text:fullPrompt}]}],
+      generationConfig:{maxOutputTokens:maxTokens, temperature:0.4}
+    })
+  });
+  if(!res.ok){
+    const body=await res.text();
+    let m='Gemini '+model+' error '+res.status;
+    try{const j=JSON.parse(body);if(j.error&&j.error.message)m='Gemini '+model+': '+j.error.message;}catch{}
+    const err=new Error(m);
+    err.status=res.status;
+    throw err;
   }
-  // claude (use Haiku for cheap one-shot text)
+  const data=await res.json();
+  const text=(data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+  return {text, provider:'gemini-'+model};
+}
+
+// Call Claude Haiku. Throws on failure.
+async function _callClaudeHaiku(system, prompt, maxTokens){
   const res=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':CHAT.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -2788,6 +2789,37 @@ async function callAIText({system, prompt, maxTokens=600}){
   const data=await res.json();
   const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
   return {text, provider:'claude-haiku-4-5'};
+}
+
+// Public entry point: tries the preferred provider, then falls back through
+// the chain (Gemini 2.0 \u2192 Gemini 1.5 \u2192 Claude Haiku) so users get
+// a result even when their Gemini key has zero free-tier quota.
+async function callAIText({system, prompt, maxTokens=600}){
+  const provider=pickProvider();
+  if(!provider) throw new Error('No AI key configured. Add Anthropic or Gemini key in chat settings (\u2699\uFE0F).');
+  const errors=[];
+  const tryGemini=async ()=>{
+    if(!CHAT.geminiKey) return null;
+    // Try 2.0 Flash first, then 1.5 Flash (different quota pool).
+    for(const model of ['gemini-2.0-flash','gemini-1.5-flash']){
+      try { return await _callGemini(model, system, prompt, maxTokens); }
+      catch(e){ errors.push(e.message); }
+    }
+    return null;
+  };
+  const tryClaude=async ()=>{
+    if(!CHAT.apiKey) return null;
+    try { return await _callClaudeHaiku(system, prompt, maxTokens); }
+    catch(e){ errors.push(e.message); return null; }
+  };
+  // Provider preference dictates order; if first chain fails, try the other.
+  const first = provider==='gemini' ? tryGemini : tryClaude;
+  const second = provider==='gemini' ? tryClaude : tryGemini;
+  const r1 = await first();
+  if(r1) return r1;
+  const r2 = await second();
+  if(r2) return r2;
+  throw new Error(errors.join(' \u2022 ') || 'All AI providers failed');
 }
 
 // ============================================================
