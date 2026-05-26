@@ -266,7 +266,7 @@ h1{font-size:32px;font-weight:800;letter-spacing:-1.5px;background:linear-gradie
       <button class="icon-btn" onclick="exportMonthPDF()">📄 <span class="lbl" data-i18n="btn.month_pdf">Month PDF</span></button>
       <button class="icon-btn" onclick="openFilters()">🔍 <span class="lbl" data-i18n="btn.filters">Filters</span></button>
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()"><span id="themeIcon">\u2600\uFE0F</span><span class="lbl" id="themeText">Light</span></button>
-      <button class="icon-btn" id="langBtn" onclick="setLang(CURRENT_LANG==='en'?'sl':'en')" title="Toggle language"><span>\u{1F310}</span><span class="lbl" id="langText">SL</span></button>
+      <button class="icon-btn" id="langBtn" onclick="setLang(CURRENT_LANG==='en'?'sl':'en')" title="Toggle language"><span id="langFlag" style="font-size:18px;line-height:1">\u{1F1F8}\u{1F1EE}</span><span class="lbl" id="langText">SL</span></button>
     </div>
   </div>
   <div id="activeFilters" class="active-filters"></div>
@@ -502,7 +502,39 @@ const T_KEYS = {
     'tab.projection': 'Projection',
     'tab.fuel': 'Gas Prices',
     'tab.statements': 'Statements',
+    'tab.manual': 'Manual',
     'tab.rules': 'Rules',
+    // Active filter tag labels (renderActiveTags)
+    'af.year': 'Year',
+    'af.type': 'Type',
+    'af.bank': 'Bank',
+    'af.from': 'From',
+    'af.to': 'To',
+    'af.min': 'Min',
+    'af.max': 'Max',
+    'af.stmt': 'Stmt',
+    'af.reconciled': 'Reconciled',
+    'af.unreconciled': 'Unreconciled',
+    // Manual transaction entry tab
+    'manual.title': 'Add a manual transaction',
+    'manual.blurb': 'For cash purchases or anything that does not appear in a bank statement. Entries are saved locally to your browser and counted in all reports.',
+    'manual.date': 'Date',
+    'manual.amount': 'Amount (€)',
+    'manual.type': 'Type',
+    'manual.source': 'Merchant / Source',
+    'manual.bank': 'Account / Bank',
+    'manual.bank_default': 'Cash',
+    'manual.category': 'Category',
+    'manual.detail': 'Detail (optional)',
+    'manual.save': 'Save transaction',
+    'manual.reset': 'Reset',
+    'manual.saved': '✓ Saved',
+    'manual.required': 'Please fill in date, amount and merchant.',
+    'manual.list_title': 'Manual entries so far',
+    'manual.list_empty': 'No manual entries yet. Use the form above to add one.',
+    'manual.delete': 'Delete',
+    'manual.confirm_delete': 'Delete this manual entry?',
+    'manual.stmt_label': 'Manual entries',
     // Year filter
     'year.all': 'All Years',
     // KPIs
@@ -614,7 +646,39 @@ const T_KEYS = {
     'tab.projection': 'Napoved',
     'tab.fuel': 'Cene goriv',
     'tab.statements': 'Izpiski',
+    'tab.manual': 'Ročno',
     'tab.rules': 'Pravila',
+    // Active filter tag labels
+    'af.year': 'Leto',
+    'af.type': 'Vrsta',
+    'af.bank': 'Banka',
+    'af.from': 'Od',
+    'af.to': 'Do',
+    'af.min': 'Min',
+    'af.max': 'Maks',
+    'af.stmt': 'Izp.',
+    'af.reconciled': 'Usklajeno',
+    'af.unreconciled': 'Neusklajeno',
+    // Manual transaction entry tab
+    'manual.title': 'Dodaj ročno transakcijo',
+    'manual.blurb': 'Za gotovinske nakupe ali karkoli, kar se ne pojavi na bančnem izpisku. Vnosi so shranjeni lokalno v vašem brskalniku in vštetji v vsa poročila.',
+    'manual.date': 'Datum',
+    'manual.amount': 'Znesek (€)',
+    'manual.type': 'Vrsta',
+    'manual.source': 'Trgovec / Vir',
+    'manual.bank': 'Račun / Banka',
+    'manual.bank_default': 'Gotovina',
+    'manual.category': 'Kategorija',
+    'manual.detail': 'Opis (neobvezno)',
+    'manual.save': 'Shrani transakcijo',
+    'manual.reset': 'Ponastavi',
+    'manual.saved': '✓ Shranjeno',
+    'manual.required': 'Izpolnite datum, znesek in trgovca.',
+    'manual.list_title': 'Dosedanje ročne transakcije',
+    'manual.list_empty': 'Še ni ročnih transakcij. Uporabite obrazec zgoraj.',
+    'manual.delete': 'Izbriši',
+    'manual.confirm_delete': 'Izbrišem to ročno transakcijo?',
+    'manual.stmt_label': 'Ročne transakcije',
     'year.all': 'Vsa leta',
     'kpi.income': 'Skupni prihodki',
     'kpi.expenses': 'Skupni stroški',
@@ -722,9 +786,13 @@ function rebuildHeaderAndTabs(){
   // Theme button retains current state
   const themeTxt = document.getElementById('themeText');
   if(themeTxt) themeTxt.textContent = document.documentElement.dataset.theme === 'light' ? t('btn.dark') : t('btn.light');
-  // Language toggle text — show the OTHER language as the action
+  // Language toggle: show the flag of the OTHER language as the action.
+  // Current EN → show 🇸🇮 (click to switch to Slovenian).
+  // Current SL → show 🇬🇧 (click to switch to English).
   const langTxt = document.getElementById('langText');
+  const langFlag = document.getElementById('langFlag');
   if(langTxt) langTxt.textContent = CURRENT_LANG === 'en' ? 'SL' : 'EN';
+  if(langFlag) langFlag.textContent = CURRENT_LANG === 'en' ? '\u{1F1F8}\u{1F1EE}' : '\u{1F1EC}\u{1F1E7}';
   // Tabs
   const tabsBar = document.getElementById('tabsBar');
   if(tabsBar){
@@ -878,7 +946,7 @@ const fmt=v=>v>=1000?(v/1000).toFixed(1)+"k":Math.round(v).toLocaleString();
 const fmtE=v=>"\u20AC"+Math.round(v).toLocaleString();
 
 let activeTab="overview",yearFilter="All",charts={},txnPage=0;
-const TABS=["overview","networth","spending","income","trends","recurring","transactions","compare","projection","fuel","statements","rules"];
+const TABS=["overview","networth","spending","income","trends","recurring","transactions","compare","projection","fuel","statements","manual","rules"];
 // TAB_LABELS kept for any legacy reference; the tabs bar is rendered via t('tab.'+key) and rebuilt by rebuildHeaderAndTabs() on language change.
 const TAB_LABELS=new Proxy({}, {get:(_,k)=>t('tab.'+k)});
 let gFilters={type:"",bank:"",category:"",dateFrom:"",dateTo:"",amtMin:"",amtMax:"",search:"",recon:"",statement:""};
@@ -934,7 +1002,7 @@ function getChipVal(id){const c=document.getElementById(id);if(!c)return"";const
 function applyFilters(){gFilters={type:getChipVal("fpTypeChips"),bank:getChipVal("fpBankChips"),category:document.getElementById("fpCategory").value,dateFrom:document.getElementById("fpDateFrom").value,dateTo:document.getElementById("fpDateTo").value,amtMin:document.getElementById("fpAmtMin").value,amtMax:document.getElementById("fpAmtMax").value,search:document.getElementById("fpSearch").value,recon:getChipVal("fpReconChips"),statement:document.getElementById("fpStatement").value};closeFilters();txnPage=0;render();serializeStateToHash();}
 function resetFilters(){gFilters={type:"",bank:"",category:"",dateFrom:"",dateTo:"",amtMin:"",amtMax:"",search:"",recon:"",statement:""};document.getElementById("fpDateFrom").value="";document.getElementById("fpDateTo").value="";document.getElementById("fpCategory").value="";document.getElementById("fpAmtMin").value="";document.getElementById("fpAmtMax").value="";document.getElementById("fpSearch").value="";document.getElementById("fpStatement").value="";setChipState("fpTypeChips","");setChipState("fpBankChips","");setChipState("fpReconChips","");closeFilters();txnPage=0;render();serializeStateToHash();}
 function removeFilter(k){gFilters[k]="";txnPage=0;render();serializeStateToHash();}
-function renderActiveTags(){const el=document.getElementById("activeFilters");const t=[];if(yearFilter!=="All")t.push({key:"_year",label:"Year: "+yearFilter});if(gFilters.type)t.push({key:"type",label:"Type: "+(gFilters.type==="In"?"Inflow":(gFilters.type==="Inv"?"Investment":"Outflow"))});if(gFilters.bank)t.push({key:"bank",label:"Bank: "+gFilters.bank});if(gFilters.category)t.push({key:"category",label:gFilters.category});if(gFilters.dateFrom)t.push({key:"dateFrom",label:"From: "+gFilters.dateFrom});if(gFilters.dateTo)t.push({key:"dateTo",label:"To: "+gFilters.dateTo});if(gFilters.amtMin)t.push({key:"amtMin",label:"Min \u20AC"+gFilters.amtMin});if(gFilters.amtMax)t.push({key:"amtMax",label:"Max \u20AC"+gFilters.amtMax});if(gFilters.search)t.push({key:"search",label:'"'+gFilters.search+'"'});if(gFilters.recon)t.push({key:"recon",label:gFilters.recon==="reconciled"?"Reconciled":"Unreconciled"});if(gFilters.statement)t.push({key:"statement",label:"Stmt: "+gFilters.statement});el.innerHTML=t.map(x=>`<span class="af-tag">${x.label}<button onclick="${x.key==='_year'?'document.getElementById(\"yearFilter\").value=\"All\";yearFilter=\"All\";render()':'removeFilter(\''+x.key+'\')'}">\u00D7</button></span>`).join("")}
+function renderActiveTags(){const el=document.getElementById("activeFilters");const tags=[];if(yearFilter!=="All")tags.push({key:"_year",label:t('af.year')+": "+yearFilter});if(gFilters.type)tags.push({key:"type",label:t('af.type')+": "+(gFilters.type==="In"?t('fp.inflow'):(gFilters.type==="Inv"?t('fp.investment'):t('fp.outflow')))});if(gFilters.bank)tags.push({key:"bank",label:t('af.bank')+": "+gFilters.bank});if(gFilters.category)tags.push({key:"category",label:gFilters.category});if(gFilters.dateFrom)tags.push({key:"dateFrom",label:t('af.from')+": "+gFilters.dateFrom});if(gFilters.dateTo)tags.push({key:"dateTo",label:t('af.to')+": "+gFilters.dateTo});if(gFilters.amtMin)tags.push({key:"amtMin",label:t('af.min')+" \u20AC"+gFilters.amtMin});if(gFilters.amtMax)tags.push({key:"amtMax",label:t('af.max')+" \u20AC"+gFilters.amtMax});if(gFilters.search)tags.push({key:"search",label:'"'+gFilters.search+'"'});if(gFilters.recon)tags.push({key:"recon",label:gFilters.recon==="reconciled"?t('af.reconciled'):t('af.unreconciled')});if(gFilters.statement)tags.push({key:"statement",label:t('af.stmt')+": "+gFilters.statement});el.innerHTML=tags.map(x=>`<span class="af-tag">${x.label}<button onclick="${x.key==='_year'?'document.getElementById(\"yearFilter\").value=\"All\";yearFilter=\"All\";render()':'removeFilter(\''+x.key+'\')'}">\u00D7</button></span>`).join("")}
 
 function getFilteredTxns(){let f=TXNS;if(yearFilter!=="All")f=f.filter(t=>t.d.startsWith(yearFilter));if(gFilters.type)f=f.filter(t=>t.t===gFilters.type);if(gFilters.bank)f=f.filter(t=>t.b===gFilters.bank);if(gFilters.category)f=f.filter(t=>t.c===gFilters.category);if(gFilters.dateFrom)f=f.filter(t=>t.d>=gFilters.dateFrom);if(gFilters.dateTo)f=f.filter(t=>t.d<=gFilters.dateTo);if(gFilters.amtMin)f=f.filter(t=>t.v>=parseFloat(gFilters.amtMin));if(gFilters.amtMax)f=f.filter(t=>t.v<=parseFloat(gFilters.amtMax));if(gFilters.search){const q=gFilters.search.toLowerCase();f=f.filter(t=>(t.s+t.c+t.r+t.b+t.d).toLowerCase().includes(q))}if(gFilters.recon==="reconciled")f=f.filter(t=>!!t.f);else if(gFilters.recon==="unreconciled")f=f.filter(t=>!t.f);if(gFilters.statement)f=f.filter(t=>t.f===gFilters.statement);return f}
 function hasActiveFilters(){return yearFilter!=="All"||Object.values(gFilters).some(v=>v!=="")}
@@ -2376,8 +2444,9 @@ function render(){
   const isStatements=activeTab==='statements';
   const isFuel=activeTab==='fuel';
   const isNetWorth=activeTab==='networth';
-  document.getElementById('activeFilters').style.display=(isRules||isStatements||isFuel||isNetWorth)?'none':'flex';
-  document.getElementById('yearFilter').style.display=(isRules||isStatements||isFuel||isNetWorth)?'none':'inline-block';
+  const isManual=activeTab==='manual';
+  document.getElementById('activeFilters').style.display=(isRules||isStatements||isFuel||isNetWorth||isManual)?'none':'flex';
+  document.getElementById('yearFilter').style.display=(isRules||isStatements||isFuel||isNetWorth||isManual)?'none':'inline-block';
   document.querySelector('.subtitle').innerHTML=dashboardSubtitle;
   if(isRules){
     document.getElementById('kpis').innerHTML='';
@@ -2400,6 +2469,12 @@ function render(){
     renderNetWorth();
     return;
   }
+  if(isManual){
+    document.getElementById('kpis').innerHTML='';
+    document.getElementById('insightsSection').innerHTML='';
+    renderManual();
+    return;
+  }
   if(TXNS.length===0){
     document.getElementById('kpis').innerHTML='';
     document.getElementById('insightsSection').innerHTML='';
@@ -2410,6 +2485,182 @@ function render(){
   renderKPIs();
   renderInsights();
   ({overview:renderOverview,spending:renderSpending,income:renderIncome,trends:renderTrends,recurring:renderRecurring,transactions:renderTransactions,compare:renderCompare,projection:renderProjection,rules:renderRules})[activeTab]();
+}
+
+// ============================================================
+// MANUAL TRANSACTION ENTRY TAB
+// Lets the user add cash purchases or anything not in a bank statement.
+// Entries are tagged with statement id MANUAL_ENTRIES so they can be
+// listed and individually deleted. Uniqueness hash includes a timestamp
+// so identical-looking entries (same date/amount/source) can both exist.
+// ============================================================
+const MANUAL_STATEMENT_ID = 'MANUAL_ENTRIES';
+
+function renderManual(){
+  const el=document.getElementById('content');
+  // Build category options from existing transactions for autocomplete
+  const cats = [...new Set(TXNS.map(x=>x.c).filter(Boolean))].sort();
+  const banks = [...new Set(TXNS.map(x=>x.b).filter(Boolean))].sort();
+  const today = new Date().toISOString().slice(0,10);
+  const manualTxns = TXNS.filter(x=>x.statement===MANUAL_STATEMENT_ID).sort((a,b)=>b.d.localeCompare(a.d));
+  el.innerHTML = `
+    <div class="section" style="margin-bottom:16px">
+      <div class="section-title">${escapeHtml(t('manual.title'))}</div>
+      <p style="color:var(--text3);margin-bottom:14px;font-size:13px;line-height:1.5">${escapeHtml(t('manual.blurb'))}</p>
+      <form id="manualForm" onsubmit="event.preventDefault();saveManualTransaction();" style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div style="grid-column:1/-1;display:grid;gap:10px;grid-template-columns:1fr 1fr">
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+            ${escapeHtml(t('manual.date'))}
+            <input type="date" id="mfDate" value="${today}" class="fp-input" required style="font-size:14px">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+            ${escapeHtml(t('manual.amount'))}
+            <input type="number" id="mfAmount" min="0" step="0.01" placeholder="0.00" class="fp-input" required style="font-size:14px">
+          </label>
+        </div>
+        <div style="grid-column:1/-1">
+          <div style="font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">${escapeHtml(t('manual.type'))}</div>
+          <div class="fp-chips" id="mfTypeChips">
+            <span class="fp-chip active" data-val="Out" onclick="toggleChip(this)">${escapeHtml(t('fp.outflow'))}</span>
+            <span class="fp-chip" data-val="In" onclick="toggleChip(this)">${escapeHtml(t('fp.inflow'))}</span>
+            <span class="fp-chip" data-val="Inv" onclick="toggleChip(this)">${escapeHtml(t('fp.investment'))}</span>
+          </div>
+        </div>
+        <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+          ${escapeHtml(t('manual.source'))}
+          <input type="text" id="mfSource" placeholder="e.g. Mercator, ATM withdrawal" class="fp-input" required style="font-size:14px">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+          ${escapeHtml(t('manual.bank'))}
+          <input type="text" id="mfBank" list="mfBankList" value="${escapeHtml(t('manual.bank_default'))}" class="fp-input" style="font-size:14px">
+          <datalist id="mfBankList">${banks.map(b=>`<option value="${escapeHtml(b)}">`).join('')}</datalist>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+          ${escapeHtml(t('manual.category'))}
+          <input type="text" id="mfCategory" list="mfCatList" placeholder="Uncategorized" class="fp-input" style="font-size:14px">
+          <datalist id="mfCatList">${cats.map(c=>`<option value="${escapeHtml(c)}">`).join('')}</datalist>
+        </label>
+        <label style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text4);text-transform:uppercase;letter-spacing:.06em">
+          ${escapeHtml(t('manual.detail'))}
+          <input type="text" id="mfDetail" placeholder="" class="fp-input" style="font-size:14px">
+        </label>
+        <div style="grid-column:1/-1;display:flex;gap:10px;margin-top:6px">
+          <button type="button" class="fp-btn fp-btn-secondary" onclick="resetManualForm()" style="flex:0 0 auto;min-width:120px">${escapeHtml(t('manual.reset'))}</button>
+          <button type="submit" class="fp-btn fp-btn-primary" style="flex:1">${escapeHtml(t('manual.save'))}</button>
+        </div>
+        <div id="mfStatus" style="grid-column:1/-1;font-size:13px;color:#10b981;min-height:18px"></div>
+      </form>
+    </div>
+    <div class="section">
+      <div class="section-title">${escapeHtml(t('manual.list_title'))} (${manualTxns.length})</div>
+      ${manualTxns.length === 0
+        ? `<p style="color:var(--text4);font-size:13px;padding:14px 0">${escapeHtml(t('manual.list_empty'))}</p>`
+        : `<div class="table-wrap"><table class="txn-table">
+            <thead><tr><th>${escapeHtml(t('manual.date'))}</th><th>${escapeHtml(t('manual.source'))}</th><th>${escapeHtml(t('manual.category'))}</th><th>${escapeHtml(t('manual.bank'))}</th><th style="text-align:right">${escapeHtml(t('manual.amount'))}</th><th></th></tr></thead>
+            <tbody>${manualTxns.map(x=>{
+              const sign = x.t==='In' ? '+' : '\u2212';
+              const color = x.t==='In' ? '#10b981' : (x.t==='Inv' ? '#8b5cf6' : '#ef4444');
+              return `<tr>
+                <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${x.d}</td>
+                <td>${escapeHtml(x.s)}${x.r?`<div style="color:var(--text4);font-size:11px">${escapeHtml(x.r)}</div>`:''}</td>
+                <td>${escapeHtml(x.c||'')}</td>
+                <td>${escapeHtml(x.b||'')}</td>
+                <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:${color};font-weight:600">${sign}\u20AC${x.v.toFixed(2)}</td>
+                <td style="text-align:right"><button class="fp-btn fp-btn-secondary" style="font-size:11px;padding:4px 8px" onclick="deleteManualTransaction('${escapeAttr(x._hash)}')">${escapeHtml(t('manual.delete'))}</button></td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table></div>`
+      }
+    </div>
+  `;
+}
+
+function resetManualForm(){
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('mfDate').value=today;
+  document.getElementById('mfAmount').value='';
+  document.getElementById('mfSource').value='';
+  document.getElementById('mfBank').value=t('manual.bank_default');
+  document.getElementById('mfCategory').value='';
+  document.getElementById('mfDetail').value='';
+  setChipState('mfTypeChips','Out');
+  document.getElementById('mfStatus').textContent='';
+}
+
+async function saveManualTransaction(){
+  const status=document.getElementById('mfStatus');
+  status.textContent='';
+  const d=document.getElementById('mfDate').value;
+  const v=parseFloat(document.getElementById('mfAmount').value);
+  const s=document.getElementById('mfSource').value.trim();
+  const b=document.getElementById('mfBank').value.trim()||t('manual.bank_default');
+  const c=document.getElementById('mfCategory').value.trim()||'Uncategorized';
+  const r=document.getElementById('mfDetail').value.trim();
+  const type=getChipVal('mfTypeChips')||'Out';
+  if(!d||!v||v<=0||!s){
+    status.style.color='#ef4444';
+    status.textContent=t('manual.required');
+    return;
+  }
+  const row={
+    d,v:Math.abs(v),s,b,t:type,c,r,
+    f:t('manual.stmt_label'),
+    statement:MANUAL_STATEMENT_ID,
+    _hash:''
+  };
+  // Include a timestamp in the hash so multiple identical entries can coexist.
+  row._hash=await sha256([d,v,s,b,type,MANUAL_STATEMENT_ID,Date.now(),Math.random()].join('|'));
+  // Ensure the virtual statement record exists so deletions/listings work.
+  await ensureManualStatementRecord();
+  await dbAddTxns([row]);
+  await loadFromIndexedDB();
+  status.style.color='#10b981';
+  status.textContent=t('manual.saved');
+  // Reset amount/source for next entry, keep date/bank/category for repeat workflows.
+  document.getElementById('mfAmount').value='';
+  document.getElementById('mfSource').value='';
+  document.getElementById('mfDetail').value='';
+  document.getElementById('mfAmount').focus();
+  // Re-render to refresh the list below
+  setTimeout(()=>{ if(activeTab==='manual') renderManual(); }, 400);
+}
+
+async function ensureManualStatementRecord(){
+  // Persist a virtual statement so it shows up in filter dropdowns + counts.
+  try{
+    const existing=await dbAllStatements();
+    if(existing.some(s=>s.id===MANUAL_STATEMENT_ID))return;
+    await dbPutStatement({
+      id:MANUAL_STATEMENT_ID,
+      filename:t('manual.stmt_label'),
+      fileSize:0,
+      parsedAt:new Date().toISOString(),
+      transactionCount:0,
+      label:t('manual.stmt_label'),
+      bank:'Manual',
+      month:'',
+      status:'manual'
+    });
+  }catch{}
+}
+
+async function deleteManualTransaction(hash){
+  if(!confirm(t('manual.confirm_delete')))return;
+  const db=await openDB();
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE_TXNS,'readwrite');
+    const store=tx.objectStore(STORE_TXNS);
+    const idx=store.index('byHash');
+    const req=idx.openCursor(IDBKeyRange.only(hash));
+    req.onsuccess=e=>{
+      const cur=e.target.result;
+      if(cur){ cur.delete(); cur.continue(); } else resolve();
+    };
+    req.onerror=()=>reject(req.error);
+    tx.oncomplete=()=>resolve();
+  });
+  await loadFromIndexedDB();
+  if(activeTab==='manual') renderManual();
 }
 
 applyTheme();
